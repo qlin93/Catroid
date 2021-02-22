@@ -21,33 +21,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package org.catrobat.catroid.utils
 
-buildscript {
-    ext.kotlin_version = '1.4.10'
-    ext.koin_version = '2.1.5'
-    ext.lifecycle_version = '2.2.0'
-    repositories {
-        google()
-        jcenter()
-        maven { url "https://developer.huawei.com/repo/" }
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class HmsConfigFileTest {
+
+    companion object {
+        const val CONFIG_FILE_PATH = "./agconnect-services.json"
     }
 
-    dependencies {
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-        classpath 'com.android.tools.build:gradle:3.5.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.4'
-        classpath 'org.catrobat.gradle.androidemulators:android-emulators-gradle:1.6.2'
-        classpath 'com.huawei.agconnect:agcp:1.4.1.300'
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        maven { url "https://developer.huawei.com/repo/" }
+    @Test
+    fun testConfigFileInProject() {
+        val configFile = File(CONFIG_FILE_PATH)
+        assertTrue("Test environment must have " + configFile.absolutePath, configFile.exists())
     }
 }
