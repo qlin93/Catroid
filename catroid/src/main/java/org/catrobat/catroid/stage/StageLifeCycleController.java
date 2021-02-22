@@ -56,6 +56,7 @@ import java.util.List;
 
 import static org.catrobat.catroid.stage.StageResourceHolder.getProjectsRuntimePermissionList;
 import static org.catrobat.catroid.ui.runtimepermissions.RequiresPermissionTask.checkPermission;
+import static org.koin.java.KoinJavaComponent.get;
 
 public final class StageLifeCycleController {
 	public static final String TAG = StageLifeCycleController.class.getSimpleName();
@@ -137,7 +138,7 @@ public final class StageLifeCycleController {
 					Log.e(TAG, "Disabling NFC foreground dispatching went wrong!", illegalStateException);
 				}
 			}
-			SpeechRecognitionHolder.Companion.getInstance().destroy();
+			get(SpeechRecognitionHolderFactory.class).getInstance().destroy();
 
 			SensorHandler.timerPauseValue = SystemClock.uptimeMillis();
 
