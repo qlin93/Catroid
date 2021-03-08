@@ -414,6 +414,11 @@ dependencies {
     implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.1.0'
     implementation 'com.google.mlkit:language-id:16.1.0'
 
+    //Huawei HiAI Engine
+    implementation group: 'com.huawei.hiai.hiai-engine', name: 'huawei-hiai-pdk', version: '1.0.0', ext: 'aar'
+    implementation group: 'com.huawei.hiai.hiai-engine', name: 'huawei-hiai-vision-ove', version: '10.0.4.307', ext: 'aar'
+
+
     // libGDX
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
