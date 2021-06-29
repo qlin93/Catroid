@@ -119,7 +119,7 @@ pipeline {
                                             sh "cp /home/user/huawei/agconnect-services.json catroid/src/agconnect-services.json"
                                         }
                                     }
-
+                                    sh "cp /home/user/huawei/agconnect-services.json catroid/src/agconnect-services.json"
                                     // Checks that the creation of standalone APKs (APK for a Pocketcode app) works, reducing the risk of breaking gradle changes.
                                     // The resulting APK is not verified itself.
                                     sh """./gradlew copyAndroidNatives assembleStandaloneDebug ${webTestUrlParameter()} -Papk_generator_enabled=true -Psuffix=generated817.catrobat \

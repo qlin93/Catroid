@@ -21,28 +21,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.catrobat.catroid.content.actions
+package org.catrobat.catroid.utils
 
-import com.badlogic.gdx.scenes.scene2d.Action
-import org.catrobat.catroid.formulaeditor.SensorHandler
-import org.catrobat.catroid.stage.SpeechRecognitionHolderFactory
-import org.koin.java.KoinJavaComponent.get
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
 
-class SetListeningLanguageAction : Action() {
+class HmsConfigFileTest {
 
-    private var languageChanged = false
-    lateinit var listeningLanguageTag: String
-
-    override fun act(delta: Float): Boolean {
-        if (!languageChanged) {
-            changeLanguage()
-        }
-        return languageChanged
+    companion object {
+        const val CONFIG_FILE_PATH = "./agconnect-services.json"
     }
 
-    private fun changeLanguage() {
-        SensorHandler.setListeningLanguageSensor(listeningLanguageTag)
-        get(SpeechRecognitionHolderFactory::class.java).instance.forceSetLanguage()
-        languageChanged = true
+    @Test
+    fun testConfigFileInProject() {
+        val configFile = File(CONFIG_FILE_PATH)
+        assertTrue("Test environment must have " + configFile.absolutePath, configFile.exists())
     }
 }
