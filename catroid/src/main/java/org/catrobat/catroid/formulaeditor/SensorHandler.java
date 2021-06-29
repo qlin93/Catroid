@@ -41,7 +41,7 @@ import org.catrobat.catroid.CatroidApplication;
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.bluetooth.base.BluetoothDevice;
 import org.catrobat.catroid.bluetooth.base.BluetoothDeviceService;
-import org.catrobat.catroid.camera.FaceTextPoseDetector;
+import org.catrobat.catroid.camera.VisualDetectionHandler;
 import org.catrobat.catroid.cast.CastManager;
 import org.catrobat.catroid.common.CatroidService;
 import org.catrobat.catroid.common.ServiceProvider;
@@ -272,7 +272,7 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 
 		SensorHandler.registerListener(instance);
 
-		FaceTextPoseDetector.addListener(instance);
+		VisualDetectionHandler.addListener(instance);
 
 		if (instance.sensorLoudness != null) {
 			instance.sensorLoudness.registerListener(instance);
@@ -343,7 +343,7 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 			instance.locationManager.removeGpsStatusListener(instance);
 		}
 
-		FaceTextPoseDetector.removeListener(instance);
+		VisualDetectionHandler.removeListener(instance);
 	}
 
 	public static Object getSensorValue(Sensors sensor) {
