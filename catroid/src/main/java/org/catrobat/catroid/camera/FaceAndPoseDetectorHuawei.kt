@@ -37,7 +37,7 @@ import org.catrobat.catroid.camera.VisualDetectionHandler.translateHuaweiFaceToV
 import org.catrobat.catroid.camera.VisualDetectionHandler.updateAllFaceSensorValues
 import org.catrobat.catroid.stage.StageActivity
 
-object FaceDetectorHuawei: ImageAnalysis.Analyzer {
+object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
 
     private val analyzer = MLAnalyzerFactory.getInstance().faceAnalyzer
 
