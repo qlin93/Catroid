@@ -29,17 +29,24 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.huawei.hms.mlsdk.MLAnalyzerFactory
 import com.huawei.hms.mlsdk.common.MLFrame
+import com.huawei.hms.mlsdk.skeleton.MLSkeletonAnalyzerFactory
 import org.catrobat.catroid.CatroidApplication
 import org.catrobat.catroid.R
 import org.catrobat.catroid.camera.VisualDetectionHandler.handleAlreadyExistingFaces
 import org.catrobat.catroid.camera.VisualDetectionHandler.handleNewFaces
 import org.catrobat.catroid.camera.VisualDetectionHandler.translateHuaweiFaceToVisualDetectionFace
 import org.catrobat.catroid.camera.VisualDetectionHandler.updateAllFaceSensorValues
+import org.catrobat.catroid.camera.VisualDetectionHandler.updateAllPoseSensorValuesHuawei
 import org.catrobat.catroid.stage.StageActivity
 
 object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
-
+    private const val DETECTION_PROCESS_ERROR_MESSAGE = "Could not analyze image."
     private val analyzer = MLAnalyzerFactory.getInstance().faceAnalyzer
+    private val poseAnalyzer = MLSkeletonAnalyzerFactory.getInstance().skeletonAnalyzer
+
+    private var faceDetected = false
+    private var poseDetected = false
+
 
     @ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
@@ -49,13 +56,19 @@ object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
                 imageProxy.imageInfo.rotationDegrees / 90
             )
 
+            faceDetected = false
+            poseDetected = false
+
             val task = analyzer.asyncAnalyseFrame(mlFrame)
             task.addOnSuccessListener {
                 val faces = translateHuaweiFaceToVisualDetectionFace(it)
                 handleAlreadyExistingFaces(faces)
                 handleNewFaces(faces)
                 updateAllFaceSensorValues(mediaImage.width, mediaImage.height)
-                imageProxy.close()
+                faceDetected = true
+                if(poseDetected) {
+                    imageProxy.close()
+                }
             }.addOnFailureListener {
                 val context = CatroidApplication.getAppContext()
                 StageActivity.messageHandler.obtainMessage(
@@ -63,6 +76,22 @@ object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
                     arrayListOf(context.getString(R.string.camera_error_face_detection))
                 ).sendToTarget()
                 Log.e(javaClass.simpleName, "Could not analyze image.", it)
+            }
+
+            val poseTask = poseAnalyzer.asyncAnalyseFrame(mlFrame)
+            poseTask.addOnSuccessListener { huaweiMLPoseList ->
+                updateAllPoseSensorValuesHuawei(huaweiMLPoseList, mediaImage.width, mediaImage.height)
+                poseDetected = true
+                if(faceDetected) {
+                    imageProxy.close()
+                }
+            }.addOnFailureListener { e ->
+                val context = CatroidApplication.getAppContext()
+                StageActivity.messageHandler.obtainMessage(
+                    StageActivity.SHOW_TOAST,
+                    arrayListOf(context.getString(R.string.camera_error_face_detection))
+                ).sendToTarget()
+                Log.e(javaClass.simpleName, DETECTION_PROCESS_ERROR_MESSAGE, e)
             }
         }
     }

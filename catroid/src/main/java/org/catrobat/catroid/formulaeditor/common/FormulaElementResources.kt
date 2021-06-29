@@ -53,6 +53,10 @@ object FormulaElementResources {
             Sensors.SECOND_FACE_X_POSITION,
             Sensors.SECOND_FACE_Y_POSITION -> Brick.FACE_DETECTION
 
+            Sensors.HEAD_TOP_X,
+            Sensors.HEAD_TOP_Y,
+            Sensors.NECK_X,
+            Sensors.NECK_Y,
             Sensors.NOSE_X,
             Sensors.NOSE_Y,
             Sensors.LEFT_EYE_INNER_X,

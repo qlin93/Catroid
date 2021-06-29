@@ -26,12 +26,13 @@ package org.catrobat.catroid.camera
 import android.graphics.Point
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
-import com.badlogic.gdx.math.collision.BoundingBox
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import com.google.mlkit.vision.text.Text
 import com.huawei.hms.mlsdk.face.MLFace
+import com.huawei.hms.mlsdk.skeleton.MLJoint
+import com.huawei.hms.mlsdk.skeleton.MLSkeleton
 import org.catrobat.catroid.camera.VisualDetectionUtils.translateToStageCoordinates
 import org.catrobat.catroid.camera.VisualDetectionUtils.writeFloatToSensor
 import org.catrobat.catroid.camera.VisualDetectionUtils.writeStringToSensor
@@ -319,6 +320,86 @@ object VisualDetectionHandler {
                 PoseLandmark.RIGHT_FOOT_INDEX -> {
                     writeFloatToSensor(it, Sensors.RIGHT_FOOT_INDEX_X, position.x.toFloat())
                     writeFloatToSensor(it, Sensors.RIGHT_FOOT_INDEX_Y, position.y.toFloat())
+                }
+            }
+        }
+    }
+
+    fun updateAllPoseSensorValuesHuawei(skeletonList: List<MLSkeleton>, imageWidth: Int,
+        imageHeight: Int) {
+        if (skeletonList.isNullOrEmpty()) return
+
+        skeletonList[0].joints.forEach { joint ->
+            joint?.let {
+                val jointPositionTranslated = translateToStageCoordinates(
+                    joint.pointX,
+                    joint.pointY,
+                    imageWidth,
+                    imageHeight)
+
+                updatePoseSensorValuesHuawei(joint.type, jointPositionTranslated)
+            }
+        }
+    }
+
+    private fun updatePoseSensorValuesHuawei(jointType: Int, position: Point) {
+        sensorListeners.forEach {
+            when (jointType) {
+                MLJoint.TYPE_HEAD_TOP -> {
+                    writeFloatToSensor(it, Sensors.HEAD_TOP_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.HEAD_TOP_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_NECK -> {
+                    writeFloatToSensor(it, Sensors.NECK_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.NECK_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_LEFT_SHOULDER -> {
+                    writeFloatToSensor(it, Sensors.LEFT_SHOULDER_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.LEFT_SHOULDER_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_RIGHT_SHOULDER -> {
+                    writeFloatToSensor(it, Sensors.RIGHT_SHOULDER_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.RIGHT_SHOULDER_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_LEFT_ELBOW -> {
+                    writeFloatToSensor(it, Sensors.LEFT_ELBOW_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.LEFT_ELBOW_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_RIGHT_ELBOW -> {
+                    writeFloatToSensor(it, Sensors.RIGHT_ELBOW_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.RIGHT_ELBOW_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_LEFT_WRIST -> {
+                    writeFloatToSensor(it, Sensors.LEFT_WRIST_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.LEFT_WRIST_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_RIGHT_WRIST -> {
+                    writeFloatToSensor(it, Sensors.RIGHT_WRIST_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.RIGHT_WRIST_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_LEFT_HIP -> {
+                    writeFloatToSensor(it, Sensors.LEFT_HIP_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.LEFT_HIP_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_RIGHT_HIP -> {
+                    writeFloatToSensor(it, Sensors.RIGHT_HIP_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.RIGHT_HIP_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_LEFT_KNEE -> {
+                    writeFloatToSensor(it, Sensors.LEFT_KNEE_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.LEFT_KNEE_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_RIGHT_KNEE -> {
+                    writeFloatToSensor(it, Sensors.RIGHT_KNEE_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.RIGHT_KNEE_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_LEFT_ANKLE -> {
+                    writeFloatToSensor(it, Sensors.LEFT_ANKLE_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.LEFT_ANKLE_Y, position.y.toFloat())
+                }
+                MLJoint.TYPE_RIGHT_ANKLE -> {
+                    writeFloatToSensor(it, Sensors.RIGHT_ANKLE_X, position.x.toFloat())
+                    writeFloatToSensor(it, Sensors.RIGHT_ANKLE_Y, position.y.toFloat())
                 }
             }
         }

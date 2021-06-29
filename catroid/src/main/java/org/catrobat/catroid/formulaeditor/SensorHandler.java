@@ -86,6 +86,10 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 	private float secondFaceSize = 0f;
 	private float secondFacePositionX = 0f;
 	private float secondFacePositionY = 0f;
+	private float headTopX = 0f;
+	private float headTopY = 0f;
+	private float neckX = 0f;
+	private float neckY = 0f;
 	private float noseX = 0f;
 	private float noseY = 0f;
 	private float leftEyeInnerX = 0f;
@@ -520,6 +524,14 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 			case SECOND_FACE_Y_POSITION:
 				return getYAccordingToRotation(instance.secondFacePositionX,
 						instance.secondFacePositionY);
+			case HEAD_TOP_X:
+				return getXAccordingToRotation(instance.headTopX, instance.headTopY);
+			case HEAD_TOP_Y:
+				return getYAccordingToRotation(instance.headTopX, instance.headTopY);
+			case NECK_X:
+				return getXAccordingToRotation(instance.neckX, instance.neckY);
+			case NECK_Y:
+				return getYAccordingToRotation(instance.neckX, instance.neckY);
 			case NOSE_X:
 				return getXAccordingToRotation(instance.noseX, instance.noseY);
 			case NOSE_Y:
@@ -885,6 +897,18 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 				break;
 			case TEXT_FROM_CAMERA:
 				instance.textFromCamera = event.valuesString[0];
+				break;
+			case HEAD_TOP_X:
+				instance.headTopX = event.values[0];
+				break;
+			case HEAD_TOP_Y:
+				instance.headTopY = event.values[0];
+				break;
+			case NECK_X:
+				instance.neckX = event.values[0];
+				break;
+			case NECK_Y:
+				instance.neckY = event.values[0];
 				break;
 			case NOSE_X:
 				instance.noseX = event.values[0];
