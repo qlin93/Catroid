@@ -80,14 +80,10 @@ object VisualDetectionHandler {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun updateTextSensorValues(text: Text, imageWidth: Int, imageHeight: Int) {
-        if (text.textBlocks.isEmpty()) return
-
-        TextBlockUtil.setTextBlocks(text.textBlocks, imageWidth, imageHeight)
-
+    fun updateTextSensorValues(text: String, numberOfBlocks: Int) {
         sensorListeners.forEach {
-            writeStringToSensor(it, Sensors.TEXT_FROM_CAMERA, text.text)
-            writeFloatToSensor(it, Sensors.TEXT_BLOCKS_NUMBER, text.textBlocks.size.toFloat())
+            writeStringToSensor(it, Sensors.TEXT_FROM_CAMERA, text)
+            writeFloatToSensor(it, Sensors.TEXT_BLOCKS_NUMBER, numberOfBlocks.toFloat())
         }
     }
 

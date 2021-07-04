@@ -29,6 +29,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.huawei.hms.mlsdk.MLAnalyzerFactory
 import com.huawei.hms.mlsdk.common.MLFrame
+import com.huawei.hms.mlsdk.langdetect.MLLangDetectorFactory
+import com.huawei.hms.mlsdk.langdetect.local.MLLocalLangDetectorSetting
 import com.huawei.hms.mlsdk.skeleton.MLSkeletonAnalyzerFactory
 import org.catrobat.catroid.CatroidApplication
 import org.catrobat.catroid.R
@@ -37,16 +39,19 @@ import org.catrobat.catroid.camera.VisualDetectionHandler.handleNewFaces
 import org.catrobat.catroid.camera.VisualDetectionHandler.translateHuaweiFaceToVisualDetectionFace
 import org.catrobat.catroid.camera.VisualDetectionHandler.updateAllFaceSensorValues
 import org.catrobat.catroid.camera.VisualDetectionHandler.updateAllPoseSensorValuesHuawei
+import org.catrobat.catroid.camera.VisualDetectionHandler.updateTextSensorValues
 import org.catrobat.catroid.stage.StageActivity
+import org.catrobat.catroid.utils.TextBlockUtil
 
-object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
+object FaceAndPoseDetectorHuawei : ImageAnalysis.Analyzer {
     private const val DETECTION_PROCESS_ERROR_MESSAGE = "Could not analyze image."
     private val analyzer = MLAnalyzerFactory.getInstance().faceAnalyzer
     private val poseAnalyzer = MLSkeletonAnalyzerFactory.getInstance().skeletonAnalyzer
+    private val textAnalyzer = MLAnalyzerFactory.getInstance().localTextAnalyzer
 
+    private var textDetected = false
     private var faceDetected = false
     private var poseDetected = false
-
 
     @ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
@@ -55,18 +60,35 @@ object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
                 mediaImage,
                 imageProxy.imageInfo.rotationDegrees / 90
             )
-
+            textDetected = false
             faceDetected = false
             poseDetected = false
 
-            val task = analyzer.asyncAnalyseFrame(mlFrame)
-            task.addOnSuccessListener {
+            val textTask = textAnalyzer.asyncAnalyseFrame(mlFrame)
+            textTask.addOnSuccessListener { text ->
+                updateTextSensorValues(text.stringValue, text.blocks.size)
+                TextBlockUtil.setTextBlocksHuawei(text.blocks, mediaImage.width, mediaImage.height)
+                textDetected = true
+                if (faceDetected && poseDetected) {
+                    imageProxy.close()
+                }
+            }.addOnFailureListener { e ->
+                val context = StageActivity.activeStageActivity.get()
+                StageActivity.messageHandler.obtainMessage(
+                    StageActivity.SHOW_TOAST,
+                    arrayListOf(context?.getString(R.string.camera_error_text_detection))
+                ).sendToTarget()
+                Log.e(javaClass.simpleName, DETECTION_PROCESS_ERROR_MESSAGE, e)
+            }
+
+            val faceTask = analyzer.asyncAnalyseFrame(mlFrame)
+            faceTask.addOnSuccessListener {
                 val faces = translateHuaweiFaceToVisualDetectionFace(it)
                 handleAlreadyExistingFaces(faces)
                 handleNewFaces(faces)
                 updateAllFaceSensorValues(mediaImage.width, mediaImage.height)
                 faceDetected = true
-                if(poseDetected) {
+                if (poseDetected && textDetected) {
                     imageProxy.close()
                 }
             }.addOnFailureListener {
@@ -80,9 +102,13 @@ object FaceAndPoseDetectorHuawei: ImageAnalysis.Analyzer {
 
             val poseTask = poseAnalyzer.asyncAnalyseFrame(mlFrame)
             poseTask.addOnSuccessListener { huaweiMLPoseList ->
-                updateAllPoseSensorValuesHuawei(huaweiMLPoseList, mediaImage.width, mediaImage.height)
+                updateAllPoseSensorValuesHuawei(
+                    huaweiMLPoseList,
+                    mediaImage.width,
+                    mediaImage.height
+                )
                 poseDetected = true
-                if(faceDetected) {
+                if (faceDetected && textDetected) {
                     imageProxy.close()
                 }
             }.addOnFailureListener { e ->

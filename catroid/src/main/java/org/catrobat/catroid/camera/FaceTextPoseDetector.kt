@@ -56,6 +56,7 @@ import org.catrobat.catroid.formulaeditor.SensorCustomEventListener
 import org.catrobat.catroid.formulaeditor.Sensors
 import org.catrobat.catroid.stage.StageActivity
 import org.catrobat.catroid.utils.TextBlockUtil
+import org.catrobat.catroid.utils.TextBlockUtil.setTextBlocksGoogle
 import kotlin.math.roundToInt
 
 object FaceTextPoseDetector : ImageAnalysis.Analyzer {
@@ -96,7 +97,8 @@ object FaceTextPoseDetector : ImageAnalysis.Analyzer {
 
             textDetectionClient.process(image)
                 .addOnSuccessListener { text ->
-                    updateTextSensorValues(text, mediaImage.width, mediaImage.height)
+                    updateTextSensorValues(text.text, text.textBlocks.size)
+                    setTextBlocksGoogle(text.textBlocks, mediaImage.width, mediaImage.height)
                     textDetected = true
                     if (faceDetected && poseDetected) {
                         imageProxy.close()
